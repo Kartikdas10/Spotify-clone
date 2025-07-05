@@ -1,148 +1,123 @@
-console.log("Lets write some javasript")
+console.log("Lets write some javasript");
+
 let currentSong = new Audio();
 let songs;
 function secondsToMinutesSeconds(seconds) {
-    if (isNaN(seconds) || seconds < 0) {
-        return "00:00";
-    }
+  if (isNaN(seconds) || seconds < 0) {
+    return "00:00";
+  }
 
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
 
-    const formattedMinutes = String(minutes).padStart(2, '0');
-    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+  const formattedMinutes = String(minutes).padStart(2, "0");
+  const formattedSeconds = String(remainingSeconds).padStart(2, "0");
 
-    return `${formattedMinutes}:${formattedSeconds}`;
+  return `${formattedMinutes}:${formattedSeconds}`;
 }
 
-
 async function getSongs() {
-    let a = await fetch("./songs/")
-    let response = await a.text();
-    // console.log("response---",response); 
-    let div = document.createElement("div")
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a")
-    let songs = []
-    for (let index = 0; index < as.length; index++) {
-        const element = as[index];
-        if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split(`/songs/`)[1])
-        }
-    }
-    return songs
+  return [
+    "PEHLI NAZAR MAIN-Atif Aslam .mp3",
+    "TrackTribe - Blue Ribbons.mp3",
+    "Wavy Kartik.mp3",
+  ];
 }
 
 const playMusic = (track, pause = false) => {
-    // let audio = new Audio(`http://127.0.0.1:5500/songs/`+track)
-    currentSong.src = "./songs/" + track
-    if (!pause) {
-        // console.log("audio---",audio);
-        currentSong.play()
-        play.src = "pause.svg"
-    }
+  currentSong.src = "/songs/" + encodeURIComponent(track);
+  if (!pause) {
+    currentSong.play();
+    play.src = "pause.svg";
+  }
 
-    document.querySelector(".songinfo").innerHTML = decodeURI(track)
-    document.querySelector(".songtime").innerHTML = "00:00 / 00:00"
-}
+  document.querySelector(".songinfo").innerHTML = decodeURI(track);
+  document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
+};
 
 async function main() {
-    // get list of all songs
-    songs = await getSongs()
-    playMusic(songs[0], true)
-    // console.log("songs-----------" + songs);
+  // Get the list of songs
+  songs = await getSongs();
+  playMusic(songs[0], true);
 
-    let songUL = document.querySelector(".songList").getElementsByTagName("ul")[0]
-    for (const song of songs) {
-        console.log(decodeURIComponent(song));
-        console.log(song.replaceAll("%20", " "));
+  let songUL = document
+    .querySelector(".songList")
+    .getElementsByTagName("ul")[0];
+  for (const song of songs) {
+    songUL.innerHTML += `
+      <li><img class="invert" src="music.svg" alt="">     
+        <div class="info">
+          <div>${song.replaceAll("%20", " ")}</div>
+          <div>Kartik</div>
+        </div>
+        <div class="playnow">
+          <span>Play Now</span>
+          <img class=" invert"  src="play.svg" alt="">
+        </div> 
+      </li>`;
+  }
 
-        songUL.innerHTML = songUL.innerHTML + `<li><img class="invert" src="music.svg" alt="">     
-                             <div class="info">
-                                    
-                             <div>${song.replaceAll("%20", " ")}</div>
-                                    <div>Kartik</div>
-                             </div>
-                             <div class="playnow">
-                                <span>Play Now</span>
-                                <img class=" invert"  src="play.svg" alt="">
-             </div> </li> ` ;
+  Array.from(
+    document.querySelector(".songList").getElementsByTagName("li")
+  ).forEach((e) => {
+    e.addEventListener("click", (element) => {
+      const audio = e.querySelector(".info").firstElementChild.innerHTML.trim();
+      playMusic(audio);
+    });
+  });
+
+  play.addEventListener("click", () => {
+    if (currentSong.paused) {
+      currentSong.play();
+      play.src = "pause.svg";
+    } else {
+      currentSong.pause();
+      play.src = "play.svg";
     }
+  });
 
-    Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", element => {
-            console.log(e.querySelector(".info").firstElementChild.innerHTML)
-            const audio = e.querySelector(".info").firstElementChild.innerHTML.trim()
-            // console.log("event audio----",audio);
-            playMusic(audio)
-        })
+  currentSong.addEventListener("timeupdate", () => {
+    document.querySelector(".songtime").innerHTML = `${secondsToMinutesSeconds(
+      currentSong.currentTime
+    )}/${secondsToMinutesSeconds(currentSong.duration)}`;
+    document.querySelector(".circle").style.left =
+      (currentSong.currentTime / currentSong.duration) * 100 + "%";
+  });
 
-    })
+  document.querySelector(".seekbar").addEventListener("click", (e) => {
+    let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
+    document.querySelector(".circle").style.left = percent + "%";
+    currentSong.currentTime = (currentSong.duration * percent) / 100;
+  });
 
-    play.addEventListener("click", () => {
-        if (currentSong.paused) {
-            currentSong.play()
-            play.src = " pause.svg"
-        }
-        else {
-            currentSong.pause()
-            play.src = " play.svg"
-        }
-    })
+  document.querySelector(".hamburger").addEventListener("click", () => {
+    document.querySelector(".left").style.left = "0";
+  });
 
-    currentSong.addEventListener("timeupdate", () => {
-        console.log(currentSong.currentTime, currentSong.duration);
-        document.querySelector(".songtime").innerHTML = `${secondsToMinutesSeconds(currentSong.currentTime)}/${secondsToMinutesSeconds(currentSong.duration)}`
-        document.querySelector(".circle").style.left = (currentSong.currentTime / currentSong.duration) * 100 + "%";
+  document.querySelector(".close").addEventListener("click", () => {
+    document.querySelector(".left").style.left = "-120%";
+  });
 
-    })
+  previous.addEventListener("click", () => {
+    let index = songs.indexOf(currentSong.src.split("/songs/")[1]);
+    if (index - 1 >= 0) {
+      playMusic(songs[index - 1]);
+    }
+  });
 
-    document.querySelector(".seekbar").addEventListener("click", e => {
-        let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
-        document.querySelector(".circle").style.left = percent + "%";
-        currentSong.currentTime = ((currentSong.duration) * percent) / 100
-    })
+  next.addEventListener("click", () => {
+    let index = songs.indexOf(currentSong.src.split("/songs/")[1]);
+    if (index + 1 < songs.length) {
+      playMusic(songs[index + 1]);
+    }
+  });
 
-
-    document.querySelector(".hamburger").addEventListener("click", () => {
-        document.querySelector(".left").style.left = "0"
-    })
-
-
-
-    document.querySelector(".close").addEventListener("click", () => {
-        document.querySelector(".left").style.left = "-120%"
-    })
-
-
-
-    previous.addEventListener("click", () => {
-        console.log("Previous Clicked")
-        let index = songs.indexOf((currentSong.src.split("/").slice(-1))[0])
-        if((index-1) >= 0){
-            playMusic(songs[index-1])
-        }
-    })
-
-
-    next.addEventListener("click", () => {
-        console.log("Next Clicked")
-        let index = songs.indexOf((currentSong.src.split("/").slice(-1))[0])
-        if((index+1) < songs.length){
-            playMusic(songs[index+1])
-        }
-        
-    })
-
-
-    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change",(e)=>{
-        console.log(e, e.target, e.target.value)
-        currentSong.volume = parseInt(e.target.value)/100
-    })
-
-
-
-
+  document
+    .querySelector(".range")
+    .getElementsByTagName("input")[0]
+    .addEventListener("change", (e) => {
+      currentSong.volume = parseInt(e.target.value) / 100;
+    });
 }
 
-main()
+main();
