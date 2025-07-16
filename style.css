@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-:root{
-    --a:0;
+:root {
+    --a: 0;
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -129,7 +130,7 @@ body {
 
 }
 
-.card:hover{
+.card:hover {
     background-color: rgb(124, 119, 119);
     cursor: pointer;
     --a: 1;
@@ -324,15 +325,15 @@ body {
     width: 270px;
 }
 
-.songtime{
+.songtime {
     width: 125px;
-     color: black;
+    color: black;
     padding: 0 12px;
 }
 
 
 
-.volume{
+.volume {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -369,7 +370,7 @@ body {
         width: 29px;
     }
 
-    .timevol{
+    .timevol {
         display: flex;
         justify-content: space-evenly;
         flex-direction: column;
@@ -418,5 +419,34 @@ body {
         gap: 23px;
         align-items: center;
     }
+
+
+    /* Add in style.css */
+    .signup-container {
+        display: flex;
+        justify-content: center;
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        background:white;
+        color: white;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .signup-container input,
+    .signup-container button {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .signup-container button {
+        background-color: #fa1d00;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+
 
 }

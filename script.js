@@ -21,6 +21,12 @@ async function getSongs() {
     "PEHLI NAZAR MAIN-Atif Aslam .mp3",
     "TrackTribe - Blue Ribbons.mp3",
     "Wavy Kartik.mp3",
+    "Satranga.mp3",
+    "Satranga.mp3",
+    "Satranga.mp3",
+    "Satranga.mp3",
+    "Satranga.mp3",
+    "Satranga.mp3",
   ];
 }
 
@@ -98,19 +104,34 @@ async function main() {
     document.querySelector(".left").style.left = "-120%";
   });
 
-  previous.addEventListener("click", () => {
-    let index = songs.indexOf(currentSong.src.split("/songs/")[1]);
-    if (index - 1 >= 0) {
-      playMusic(songs[index - 1]);
-    }
-  });
+  const next = document.getElementById("next");
 
-  next.addEventListener("click", () => {
-    let index = songs.indexOf(currentSong.src.split("/songs/")[1]);
-    if (index + 1 < songs.length) {
-      playMusic(songs[index + 1]);
-    }
-  });
+next.addEventListener("click", () => {
+  let current = decodeURIComponent(currentSong.src.split("/songs/")[1]);
+  let index = songs.indexOf(current);
+
+  if (index + 1 < songs.length) {
+    playMusic(songs[index + 1]);
+  } else {
+    // Optional: restart from the beginning
+    playMusic(songs[0]);
+  }
+});
+
+  const previous = document.getElementById("previous");
+
+previous.addEventListener("click", () => {
+  let current = decodeURIComponent(currentSong.src.split("/songs/")[1]);
+  let index = songs.indexOf(current);
+
+  if (index > 0) {
+    playMusic(songs[index - 1]);
+  } else {
+    // Optional: go to last song if already at the first
+    playMusic(songs[songs.length - 1]);
+  }
+});
+
 
   document
     .querySelector(".range")
@@ -119,5 +140,11 @@ async function main() {
       currentSong.volume = parseInt(e.target.value) / 100;
     });
 }
+
+
+  document.querySelector(".signupbtn").addEventListener("click", () => {
+  window.location.href = "signup.html"; // this will load signup.html
+  });
+
 
 main();
